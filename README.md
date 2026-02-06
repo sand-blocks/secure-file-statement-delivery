@@ -62,7 +62,7 @@ The application orchestrates a secure statement lifecycle:
 
 ```bash
 # Clone and navigate
-git clone <repository-url>
+git clone https://github.com/sand-blocks/secure-file-statement-delivery.git
 cd secure-file-statement-delivery
 
 # Fetch dependencies (offline cache for faster builds)
