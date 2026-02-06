@@ -1,0 +1,19 @@
+sequenceDiagram
+    participant Client
+    participant API
+    participant DB
+    participant Storage
+
+    Client->>API: POST /api/v1/statements/generate { accountId }
+    API->>DB: query transactions for account
+    API->>API: render template -> generate PDF
+    API->>API: encrypt PDF (per-file key)
+    API->>Storage: upload encrypted PDF (returns filename)
+    API->>Storage: presign URL for filename (internal)
+    API->>DB: persist Statement (filename, retrievalToken, link, expiresAt)
+    API-->>Client: return retrieval link (public base + token)
+
+    Client->>API: GET /api/v1/public/{token}
+    API->>DB: validate token and expiry
+    API->>Storage: fetch blob using internal HTTP client (WebClient)
+    API-->>Client: stream blob (proxy response)

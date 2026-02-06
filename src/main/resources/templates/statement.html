@@ -1,0 +1,38 @@
+<html>
+   <head>
+      <meta charset="UTF-8"></meta>
+   </head>
+   <body>
+   <h3 th:utext="|${customerAccount.firstName} ${customerAccount.lastName}<br />
+                    ${customerAccount.emailAddress}<br />
+                    ${customerAccount.accountId}<br />
+                    ${customerAccount.cellphoneNumber}|">
+   </h3>
+      <h2 style="text-align:center;">Account Statement</h2>
+      <br /><br />
+      <table style="width:100%">
+         <tbody>
+            <tr>
+               <th>Date</th>
+               <th>Transaction Description</th>
+               <th>Amount</th>
+            </tr>
+            <tr th:each="trn : ${transactions}">
+               <td th:text="${trn.postDate}"></td>
+               <td th:text="${trn.description}"></td>
+               <td th:text="|${trn.amount} ${trn.drOrCr}|"></td>
+            </tr>
+            <tr>
+               <td></td>
+               <td></td>
+               <td></td>
+            </tr>
+            <tr>
+               <td>Balance</td>
+               <td></td>
+               <td th:text="${totalBalance}"></td>
+            </tr>
+         </tbody>
+      </table>
+   </body>
+</html>

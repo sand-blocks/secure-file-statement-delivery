@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: cbank-secure-file-statement-delivery
+    ports:
+      - "8443:8443"
+#    network_mode: "host"
+    environment:
+      - LOGSTASH_DESTINATION=localhost:5044
+      - CONFIG_AWS_S3CLIENT_ACCESS_KEY=minioadmin
+      - CONFIG_AWS_S3CLIENT_SECRET_KEY=minioadmin
+      - CONFIG_AWS_S3CLIENT_ENDPOINT=http://cbank-minio:9000
+      - CONFIG_AWS_S3CLIENT_BUCKET_NAME=files
+      - CONFIG_AWS_S3CLIENT_LINK_EXPIRY_MINS=30
+      - CONFIG_PDF_ENCRYPTION_MASTER_SECRET_KEY=passwd
+      - CONFIG_PDF_RETRIEVAL_PUBLIC_URL_BASE=https://localhost:8443/api/v1/public/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://cbank-postgres:5432/cbank
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=passwd
+    depends_on:
+      db:
+        condition: service_healthy
+      minio:
+        condition: service_started
+    restart: always
+  db:
+    image: postgres:latest
+    container_name: cbank-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: passwd
+      POSTGRES_DB: cbank
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d cbank" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  minio:
+    image: minio/minio
+    container_name: cbank-minio
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    restart: always
+
+  minio-init:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin) do echo 'Waiting for MinIO...' && sleep 1; done;
+      /usr/bin/mc mb myminio/files --ignore-existing;
+      echo 'Bucket /files created and set to PRIVATE';
+      exit 0;
+      "

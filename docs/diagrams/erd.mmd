@@ -1,0 +1,30 @@
+erDiagram
+    CustomerAccount ||--o{ Transaction : has
+    CustomerAccount ||--o{ Statement : owns
+
+    CustomerAccount {
+        Integer accountId PK
+        String firstName
+        String lastName
+        String idNumber
+        String emailAddress
+        String cellphoneNumber
+    }
+    Transaction {
+        Integer transactionId PK
+        LocalDateTime createdAt
+        LocalDate postDate
+        BigDecimal amount
+        String description
+        String drOrCr
+        Integer accountId FK
+    }
+    Statement {
+        Integer statementId PK
+        LocalDateTime createdAt
+        Integer accountId FK
+        String filename
+        String retrievalToken
+        String link
+        LocalDateTime expiresAt
+    }

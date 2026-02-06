@@ -1,0 +1,36 @@
+spring.application.name=secure-file-statement-delivery
+server.shutdown=graceful
+spring.lifecycle.timeout-per-shutdown-phase=30s
+spring.config.import=optional:classpath:security.properties
+#SSL Config
+server.port=8443
+server.ssl.bundle=ssl-bundle
+spring.ssl.bundle.jks.ssl-bundle.keystore.location=classpath:keystore.p12
+spring.ssl.bundle.jks.ssl-bundle.keystore.password=passwd
+spring.ssl.bundle.jks.ssl-bundle.keystore.type=PKCS12
+spring.ssl.bundle.jks.ssl-bundle.key.alias=secure-file-statement-delivery
+#Open Telemetry Config
+management.opentelemetry.logging.export.otlp.endpoint=http://localhost:4318/v1/logs
+management.otlp.metrics.export.enabled=false
+#Logstash
+logstash.destination=localhost:5044
+#S3 Client
+config.aws.s3client.access_key=minioadmin
+config.aws.s3client.secret_key=minioadmin
+config.aws.s3client.endpoint=http://localhost:9000
+config.aws.s3client.bucket_name=files
+config.aws.s3client.link_expiry_mins=30
+#PDF Generation
+config.pdf.encryption.master_secret_key=passwd
+#PDF File Retrieval
+config.pdf.retrieval.public_url_base=https://localhost:8443/api/v1/public/
+#PostGres Config
+spring.datasource.url= jdbc:postgresql://localhost:5432/cbank
+spring.datasource.username= postgres
+spring.datasource.password= passwd
+spring.datasource.hikari.maximum-pool-size=10
+spring.datasource.hikari.minimum-idle=5
+spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation= true
+spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto= update
+
