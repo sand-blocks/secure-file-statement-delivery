@@ -201,6 +201,7 @@ curl -k https://localhost:8443/api/v1/public/1111-2222...
 
 # Returns: PDF file (application/pdf)
 ```
+![alt text](docs/diagrams/flow.png)
 
 ---
 
@@ -348,6 +349,8 @@ src/main/java/za/co/cbank/securefilestatementdelivery
 │
 └─ SecureFileStatementDeliveryApplication.java  # Entry point
 ```
+
+![alt text](docs/diagrams/erd.png)
 
 **Key Design Decisions**:
 
