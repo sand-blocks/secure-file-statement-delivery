@@ -168,7 +168,7 @@ curl -X POST https://localhost:8443/api/v1/statements/create \
 
 ### Core Endpoints
 
-The comprehensive API guide is available on a publically accessible [Postman Collection](https://www.postman.com/descent-module-astronomer-28342281/cbank-secure-file-statement-delivery). Be sure to choose the **Local Dev** Environment to pre-populate all variables.
+The comprehensive API guide is available on a publically accessible [Postman Collection](https://www.postman.com/descent-module-astronomer-28342281/cbank-secure-file-statement-delivery){:target="_blank"}. Be sure to choose the **Local Dev** Environment to pre-populate all variables.
 
 | Endpoint | Method | Auth | Purpose |
 |---|---|---|---|
