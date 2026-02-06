@@ -238,6 +238,70 @@ Key test files:
 - [src/test/java/za/co/cbank/securefilestatementdelivery/controller/StatementControllerTest.java](src/test/java/za/co/cbank/securefilestatementdelivery/controller/StatementControllerTest.java)
 - [src/test/java/za/co/cbank/securefilestatementdelivery/BlackBoxTest/StatementGenerationBlackBoxTest.java](src/test/java/za/co/cbank/securefilestatementdelivery/BlackBoxTest/StatementGenerationBlackBoxTest.java)
 
+### Testing Conventions
+
+- **Unit Tests**: Test services in isolation (mocked repositories, mocked S3 client).
+- **Integration Tests**: Use `@SpringBootTest` with `TestContainers` or compose for real DB/S3.
+- **Test Data**: Use builders or `@DataBuilder` for readable test fixtures.
+- **Black Box Tests**: End-to-end tests (e.g., `StatementGenerationBlackBoxTest.java`) that validate entire pipeline.
+
+Example unit test :
+
+```java
+@ExtendWith(MockitoExtension.class)
+class StatementServiceTest {
+
+	@Mock
+	private TemplateEngine templateEngine;
+
+	@InjectMocks
+	private StatementService statementService;
+
+	private CustomerAccount testAccount;
+
+	@BeforeEach
+	void setUp() {
+		testAccount = CustomerAccount.builder()
+				.accountId(1000000001)
+				.firstName("John")
+				.idNumber("9001010000083")
+				.build();
+	}
+
+	@Test
+	void formatStatementTransactions_ShouldCalculateCorrectBalance() {
+		List<Transaction> transactions = Arrays.asList(
+				Transaction.builder().amount(new BigDecimal("1000.00")).drOrCr("CR").customerAccount(testAccount).build(),
+				Transaction.builder().amount(new BigDecimal("500.00")).drOrCr("DR").customerAccount(testAccount).build(),
+				Transaction.builder().amount(new BigDecimal("50.00")).drOrCr("CR").customerAccount(testAccount).build()
+		);
+		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
+
+		statementService.formatStatementTransactions(transactions);
+
+		verify(templateEngine).process(eq("statement"), contextCaptor.capture());
+
+		Context capturedContext = contextCaptor.getValue();
+
+		BigDecimal capturedBalance = (BigDecimal) capturedContext.getVariable("totalBalance");
+		CustomerAccount capturedAccount = (CustomerAccount) capturedContext.getVariable("customerAccount");
+
+		assertEquals(0, new BigDecimal("550.00").compareTo(capturedBalance),
+				"The balance should be 550.00");
+		assertEquals("John", capturedAccount.getFirstName());
+	}
+
+	@Test
+	void formatStatementTransactions_ShouldReturnEmpty_WhenListIsEmpty() {
+		// Act
+		String result = statementService.formatStatementTransactions(List.of());
+
+		// Assert
+		assertEquals("No transactions, cannot generate statement", result);
+	}
+}
+```
+
 ### Configuration & Environment Variables
 
 Spring uses **relaxed property binding**: `config.aws.s3client.secret_key` = `CONFIG_AWS_S3CLIENT_SECRET_KEY`.
@@ -568,37 +632,6 @@ Watch:
 - **DTO Mapping**: Use MapStruct. Run `./mvnw clean package` after adding/modifying mappers (compile-time generation).
 - **Exception Handling**: Custom exceptions extend `RuntimeException`. Global handler via `@ControllerAdvice` in [src/main/java/za/co/cbank/securefilestatementdelivery/exception/GlobalExceptionHandler.java](src/main/java/za/co/cbank/securefilestatementdelivery/exception/GlobalExceptionHandler.java).
 - **Logging**: SLF4J with Logback. Use `@Slf4j` (Lombok). MDC context available in filters (user, IP).
-
-### Testing Conventions
-
-- **Unit Tests**: Test services in isolation (mocked repositories, mocked S3 client).
-- **Integration Tests**: Use `@SpringBootTest` with `TestContainers` or compose for real DB/S3.
-- **Test Data**: Use builders or `@DataBuilder` for readable test fixtures.
-- **Black Box Tests**: End-to-end tests (e.g., `StatementGenerationBlackBoxTest.java`) that validate entire pipeline.
-
-Example unit test (mocked):
-
-```java
-@Test
-void generateStatement_ShouldEncryptAndUpload() {
-    // Arrange
-    Integer accountId = 1000000003;
-    Statement expectedStatement = Statement.builder()
-        .accountId(accountId)
-        .retrievalToken("<UUID>")
-        .build();
-    
-    when(statementRepository.findByAccountId(accountId))
-        .thenReturn(Optional.of(expectedStatement));
-    
-    // Act
-    Map<String, Object> result = statementService.generateStatement(accountId);
-    
-    // Assert
-    assertThat(result).containsKey("retrievalToken");
-    verify(fileStorageService).uploadEncrypted(any());
-}
-```
 
 ---
 ## Prepping for production deployment
