@@ -159,7 +159,10 @@ curl -X POST https://localhost:8443/api/v1/statements/create \
   -H "Content-Type: application/json" \
   -d '{"accountId": 1000000003}' -k
 ```
-
+**Use the Customer's ID Number to view the PDF Document**
+```bash
+9001010000085
+```
 
 
 ### Core Endpoints
@@ -207,7 +210,7 @@ curl -k -X POST https://localhost:8443/api/v1/statements/create \
 curl -k https://localhost:8443/api/v1/public/1111-2222...
 
 # Returns: PDF file (application/pdf)
-**Use the Customer's ID Number to view the PDF file** 
+#**Use the Customers ID Number to view the PDF file** 
 ```
 ### Diagram: Flow
 ![alt text](docs/diagrams/flow.png)
