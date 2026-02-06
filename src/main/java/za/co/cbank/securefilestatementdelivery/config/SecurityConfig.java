@@ -29,6 +29,7 @@ public class SecurityConfig {
 				.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/v1/public/**").permitAll()
+						.requestMatchers("/actuator/**").permitAll()
 						.anyRequest().authenticated()
 				)
 				.httpBasic(Customizer.withDefaults());
