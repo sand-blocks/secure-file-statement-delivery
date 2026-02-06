@@ -4,7 +4,7 @@
 
 ## Overview
 
-**Secure File Statement Delivery** is a production-ready Spring Boot microservice that generates encrypted PDF account statements, stores them securely in S3-compatible object storage, and delivers them via short-lived, app-mediated retrieval tokens. The system never exposes storage credentials or endpoints to end users.
+**Secure File Statement Delivery** solution is a system designed to store customer account statements as PDF files and provide secure, time-limited download links to customers. CBank's requirement for a production-ready Spring Boot microservice that generates encrypted PDF account statements, stores them securely in S3-compatible object storage, and delivers them via short-lived, app-mediated retrieval tokens has been fulfilled. The system never exposes storage credentials or endpoints to end users.
 
 ### System Context
 
