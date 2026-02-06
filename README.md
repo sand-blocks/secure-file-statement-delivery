@@ -175,6 +175,8 @@ curl -X POST https://localhost:8443/api/v1/statements/create \
 
 ### Example: Generate Statement
 
+
+
 ```bash
 curl -k -X POST https://localhost:8443/api/v1/statements/create \
   -H "Content-Type: application/json" \
@@ -182,7 +184,12 @@ curl -k -X POST https://localhost:8443/api/v1/statements/create \
   -d '{
     "accountId": 1000000003
   }'
-
+```
+**Use the Customer's ID Number to view the PDF Document**
+```bash
+9001010000085
+```
+```bash
 # Response (HTTP 201):
 {
   "statementId": 42,
@@ -200,6 +207,7 @@ curl -k -X POST https://localhost:8443/api/v1/statements/create \
 curl -k https://localhost:8443/api/v1/public/1111-2222...
 
 # Returns: PDF file (application/pdf)
+**Use the Customer's ID Number to view the PDF file** 
 ```
 ### Diagram: Flow
 ![alt text](docs/diagrams/flow.png)
