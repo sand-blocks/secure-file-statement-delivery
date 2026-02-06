@@ -49,53 +49,6 @@ The application orchestrates a secure statement lifecycle:
 
 ---
 
-## Getting Started (< 2 minutes)
-
-### Prerequisites
-
-- **JDK 21** (set `JAVA_HOME` if running outside container)
-- **Git**
-- **Docker & Docker Compose** (optional but recommended for local integration testing)
-- Maven wrapper included (no separate Maven install needed)
-
-### Option 1: Run Locally (Dev Mode)
-
-```bash
-# Clone and navigate
-git clone https://github.com/sand-blocks/secure-file-statement-delivery.git
-cd secure-file-statement-delivery
-
-# Fetch dependencies (offline cache for faster builds)
-./mvnw -B dependency:go-offline
-
-# Build and package
-./mvnw -DskipTests package
-
-# Run the app (uses in-memory H2 DB by default; limited testing)
-./mvnw spring-boot:run
-```
-
-The app will start on **https://localhost:8443** (self-signed certificate; accept the risk).
-
-### Option 2: Full Integration Stack (Recommended)
-
-```bash
-# Start PostgreSQL + MinIO + App (all three services)
-docker compose -f compose.yaml up --build
-
-# In another terminal, verify health:
-curl -k https://localhost:8443/actuator/health
-```
-
-This loads:
-- **PostgreSQL** (`cbank` database) on `localhost:5432`
-- **MinIO** (S3-compatible) on `localhost:9000` (console at `:9001`)
-- **App** on `https://localhost:8443`
-
-All default credentials (postgres/passwd, minioadmin/minioadmin) are **development only**—replace in production via environment variables or secrets manager.
-
----
-
 ## Core Domain Logic
 
 ### The Security Model
@@ -142,6 +95,54 @@ All default credentials (postgres/passwd, minioadmin/minioadmin) are **developme
 - Exposes S3 endpoint to client (compliance risk)
 - Loses fine-grained audit context (S3 logs are separate)
 - Presigned URL can be cached/shared
+
+---
+
+
+## Getting Started (< 2 minutes)
+
+### Prerequisites
+
+- **JDK 21** (set `JAVA_HOME` if running outside container)
+- **Git**
+- **Docker & Docker Compose** (optional but recommended for local integration testing)
+- Maven wrapper included (no separate Maven install needed)
+
+### Option 1: Run Locally (Dev Mode)
+
+```bash
+# Clone and navigate
+git clone https://github.com/sand-blocks/secure-file-statement-delivery.git
+cd secure-file-statement-delivery
+
+# Fetch dependencies (offline cache for faster builds)
+./mvnw -B dependency:go-offline
+
+# Build and package
+./mvnw -DskipTests package
+
+# Run the app (uses in-memory H2 DB by default; limited testing)
+./mvnw spring-boot:run
+```
+
+The app will start on **https://localhost:8443** (self-signed certificate; accept the risk).
+
+### Option 2: Full Integration Stack (Recommended)
+
+```bash
+# Start PostgreSQL + MinIO + App (all three services)
+docker compose -f compose.yaml up --build
+
+# In another terminal, verify health:
+curl -k https://localhost:8443/actuator/health
+```
+
+This loads:
+- **PostgreSQL** (`cbank` database) on `localhost:5432`
+- **MinIO** (S3-compatible) on `localhost:9000` (console at `:9001`)
+- **App** on `https://localhost:8443`
+
+All default credentials (postgres/passwd, minioadmin/minioadmin) are **development only**—replace in production via environment variables or secrets manager.
 
 ---
 
